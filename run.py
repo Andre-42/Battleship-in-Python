@@ -9,9 +9,9 @@ BATTLEFIELD_SIZE_L = (12, 12)
 BATTLEFIELD_PLAYER = np.zeros(BATTLEFIELD_SIZE, dtype=bool)
 BATTLEFIELD_PC = BATTLEFIELD_PLAYER
 
-battlevector = BATTLEFIELD_PC[1, :]
-startpos = 3
-ship = SHIP_SIZES[1]
+max_letter = BATTLEFIELD_PLAYER.shape[1]
+col_names = list(map(chr, range(97, max_letter+97)))
+max_number = BATTLEFIELD_PLAYER.shape[0]
 
 
 def set_ship_inline(boardvector, startpos, shiplength):
@@ -61,7 +61,7 @@ def set_ship_inline(boardvector, startpos, shiplength):
         posfirst = min(posfirst)
         #print(posend)
         posstart = int(posend - shiplength)
-        if posstart < 0:
+        if (posstart < 0) or (fieldindex[posstart] < 0):
             posstart = int(posfirst)
             posend = (posstart + shiplength)
         print(f"ship: {shiplength}, wish:{fieldwish} , idx: {fieldindex}")
@@ -71,79 +71,136 @@ def set_ship_inline(boardvector, startpos, shiplength):
     return boardvector
 
 
-def set_ship_random(battlefield, ship):
+def set_ship_random(set_battlefield, ship):
     """
     This function defines the column or row for a new ship position
     """
     pos_x = np.random.randint(BATTLEFIELD_SIZE[1]-1)
     pos_y = np.random.randint(BATTLEFIELD_SIZE[0]-1)
-    row_xy = battlefield[pos_y, :]
-    col_xy = battlefield[:, pos_x]
+    row_xy = set_battlefield[pos_y, :]
+    col_xy = set_battlefield[:, pos_x]
     roworcol = np.random.randint(2)
     if roworcol == 1:
         boardvector = set_ship_inline(row_xy, pos_x, ship)
         if (boardvector != row_xy).all():
-            battlefield[pos_y, :] = boardvector
+            set_battlefield[pos_y, :] = boardvector
     else:
         boardvector = set_ship_inline(col_xy, pos_y, ship)
         if (boardvector != col_xy).all():
-            battlefield[:, pos_x] = boardvector
-    return battlefield
+            set_battlefield[:, pos_x] = boardvector
+    return set_battlefield
 
 
 def create_battlefield(battlefield):
-    for ship in SHIP_SIZES:
-        #print(ship)
-        tryagain = True
-        it = 1
-        while tryagain:
-            sb = sum(sum(battlefield))
-            battlefieldNew = set_ship_random(battlefield, ship)
-            sb2 = sum(sum(battlefieldNew))
-            isset = (sb2-sb) == ship
-            if isset:
-                battlefield = battlefieldNew
-                tryagain = False
-                break
-            tryagain = tryagain or it < 100
-            #print(f"{sb} and {sb2}, {isset}")
-            it += 1
+    redo = True
+    while redo:
+        for idship in range(len(SHIP_SIZES)):
+            # print(ship)
+            ship = SHIP_SIZES[idship]
+            maxSum = np.cumsum(SHIP_SIZES)
+            maxSum = maxSum[idship]
+            tryagain = True
+            it = 1
+            while tryagain:
+                sb = sum(sum(battlefield))
+                battlefield_new = set_ship_random(battlefield, ship)
+                sb2 = sum(sum(battlefield_new))
+                isset = ((sb2-sb) == ship) and (sb2 == maxSum)
+                print(f"ship {ship} is deployed: {isset}")
+                if isset:
+                    battlefield = battlefield_new
+                    tryagain = False
+                else:
+                    tryagain = tryagain and it < 100 and maxSum < sb
+                # print(f"{sb} and {sb2}, {isset}")
+                it += 1
+                print(it)
+            redo = not (isset)
+            if redo:
+                battlefield = np.zeros(BATTLEFIELD_SIZE, dtype=bool)
 
     print(battlefield)
     return battlefield
 
 
-def startGame():
+def create_scoreboards(max_letter, col_names, max_number):
+    n_el = max_letter * max_number
+    not_hit = [None] * n_el
+    field_index = [None] * n_el
+    field_x = [None] * n_el
+    field_y = [None] * n_el
+    it_list = 0
+    for j in range(max_letter):
+        for i in range(max_number):
+            # print(it_list)
+            not_hit[it_list] = col_names[j] + str(i+1)
+            field_index[it_list] = it_list
+            field_x[it_list] = j
+            field_y[it_list] = i
+            it_list += 1
+    return not_hit, field_index, field_x, field_y
+
+
+def start_game():
+    player = BATTLEFIELD_PLAYER
+    pc = BATTLEFIELD_PC
     # create battlefield for player
-    BATTLEFIELD_PLAYER = create_battlefield(BATTLEFIELD_PLAYER)
+    player = create_battlefield(player)
     # create battlefield for player
-    BATTLEFIELD_PC = create_battlefield(BATTLEFIELD_PC)
+    pc = create_battlefield(pc)
+    print("This is your fleet:")
+    print(pc)
+
+    max_letter = BATTLEFIELD_PLAYER.shape[1]
+    col_names = list(map(chr, range(97, max_letter+97)))
+    max_number = BATTLEFIELD_PLAYER.shape[0]
+
+    created_scoreboard = create_scoreboards(max_letter, col_names, max_number)
+    not_hit_player = created_scoreboard[0]
+    not_hit_pc = not_hit_player
+    hitlist_player = []
+    hitlist_pc = []
+    print(not_hit_pc)
+    return player, pc
+            
+
+def endGame():
+    print("stop game")
 
 
-def endGame()
-    break
-
-
-def playGame()
+def play_game():
     """
     user Input for player.
     """
+    print("Targets should be provided as:")
+    print(f" -letters for columns, {col_names[0]}...{col_names[max_letter-1]}")
+    print(f" -numbers for rows, max({max_number})")
+    print(" -example: a3, d8 or f1")
     field = input("Type in your target coordinate:")
     return field
 
 
-def main()
+def check_command(command):
+    print("check command syntax")
+    # try
+    #    col_command = 
+
+
+def main():
     """ 
     main game function
     """
-    startGame()
+    maps = start_game()
+    BATTLEFIELD_PLAYER = maps[0]
+    BATTLEFIELD_PC = maps[1]
     print("Welcome to a game of battleship.")
     print("Your fleet is deployed and ready to hunt.")
-
+    print("This is your fleet:")
+    print(BATTLEFIELD_PLAYER)
     gameon = True
     while gameon:
-        command = playGame()
+        command = play_game()
 
         gameon = False
 
-    
+main()
