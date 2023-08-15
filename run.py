@@ -14,6 +14,33 @@ col_names = list(map(chr, range(97, max_letter+97)))
 max_number = BATTLEFIELD_PLAYER.shape[0]
 
 
+def create_scoreboards(max_letter, col_names, max_number):
+    n_el = max_letter * max_number
+    not_hit = [None] * n_el
+    field_index = [None] * n_el
+    field_x = [None] * n_el
+    field_y = [None] * n_el
+    it_list = 0
+    for j in range(max_letter):
+        for i in range(max_number):
+            # print(it_list)
+            not_hit[it_list] = col_names[j] + str(i+1)
+            field_index[it_list] = it_list
+            field_x[it_list] = j
+            field_y[it_list] = i
+            it_list += 1
+    return not_hit, field_index, field_x, field_y
+
+
+created_scoreboard = create_scoreboards(max_letter, col_names, max_number)
+not_hit_player = created_scoreboard[0]
+not_hit_pc = not_hit_player
+hitlist_player = []
+hitlist_pc = []
+score_player = 0
+score_pc = 0
+
+
 def set_ship_inline(boardvector, startpos, shiplength):
     """
     This function defines the ship position within a column or row.
@@ -123,24 +150,6 @@ def create_battlefield(battlefield):
     return battlefield
 
 
-def create_scoreboards(max_letter, col_names, max_number):
-    n_el = max_letter * max_number
-    not_hit = [None] * n_el
-    field_index = [None] * n_el
-    field_x = [None] * n_el
-    field_y = [None] * n_el
-    it_list = 0
-    for j in range(max_letter):
-        for i in range(max_number):
-            # print(it_list)
-            not_hit[it_list] = col_names[j] + str(i+1)
-            field_index[it_list] = it_list
-            field_x[it_list] = j
-            field_y[it_list] = i
-            it_list += 1
-    return not_hit, field_index, field_x, field_y
-
-
 def start_game():
     player = BATTLEFIELD_PLAYER
     pc = BATTLEFIELD_PC
@@ -161,11 +170,12 @@ def start_game():
     hitlist_player = []
     hitlist_pc = []
     print(not_hit_pc)
-    return player, pc
+    return player, pc, not_hit_player, not_hit_pc, created_scoreboard
             
 
-def endGame():
-    print("stop game")
+def endGame(command_stop):
+    is_valid = np.isin(command_stop, ["stop", "s"])
+    return is_valid
 
 
 def play_game():
@@ -180,10 +190,52 @@ def play_game():
     return field
 
 
+def did_i_hit_something(target, player_id):
+    valid_input = created_scoreboard[0]
+    is_position = np.isin(valid_input, target)
+    is_position = np.concatenate(np.nonzero(is_position))
+    print((int(is_position)))
+    get_field_index = created_scoreboard[1]
+    get_field_index = get_field_index[is_position[0]]
+    get_x = created_scoreboard[2][get_field_index]
+    get_y = created_scoreboard[3][get_field_index]
+    if player_id == 1:
+        is_hit = BATTLEFIELD_PC[get_y, get_x]
+    else:
+        is_hit = BATTLEFIELD_PLAYER[get_y, get_x]
+    print(f"Hit comfirmed: {is_hit}")
+    return is_hit
+        
+
 def check_command(command):
     print("check command syntax")
-    # try
-    #    col_command = 
+    # try:
+    valid_input = created_scoreboard[0]
+    print(f"test input: {command},{type(command)} is part of ref{type(valid_input)}")
+    is_valid = np.isin(command, valid_input)
+    if is_valid == 0:
+        is_valid = np.isin(command, ["stop", "s"])
+        if is_valid:
+            print("Retreat command received.")
+            print("Game will be closed")
+        else:
+            print("Your target coordinates are not correct. TRY again")
+            
+    else:
+        not_hit_yet = not_hit_pc
+        is_valid = np.isin(command, not_hit_yet)
+        if is_valid == 0:
+            print("You hit that place already.")
+            isvalid = False
+            was_hit = did_i_hit_something(command, 1)
+            if was_hit:
+                print(f"It was a direct hit at {command}")
+            else:
+                print("We missed.")
+        else:
+            print(f"New target aquired: {command}")
+            print("Fire!")
+    return is_valid
 
 
 def main():
@@ -193,14 +245,43 @@ def main():
     maps = start_game()
     BATTLEFIELD_PLAYER = maps[0]
     BATTLEFIELD_PC = maps[1]
+    created_scoreboard = maps[4]
+    not_hit_player = maps[2]
+    not_hit_pc = maps[3]
+    score_player = 0
+    score_pc = 0
     print("Welcome to a game of battleship.")
     print("Your fleet is deployed and ready to hunt.")
     print("This is your fleet:")
     print(BATTLEFIELD_PLAYER)
     gameon = True
     while gameon:
-        command = play_game()
-
-        gameon = False
-
+        user_command = play_game()
+        user_command = user_command.lower()
+        validity_result = check_command(user_command)
+        if validity_result:
+            stop_it = endGame(user_command)
+            print(stop_it)
+            if not stop_it:
+                hit = did_i_hit_something(user_command, 1)
+                print(user_command)
+                print(not_hit_player)
+                try:
+                    not_hit_player.remove(user_command)
+                    hitlist_player.append(user_command)
+                except NameError:
+                    print("usercommand failed")
+                if hit:
+                    print(f"Hit! Target confirmed at: {user_command}")
+                    score_player += 1
+                else:
+                    print("no hit")
+                gameon = not (score_player >= sum(SHIP_SIZES) or\
+                    score_pc >= sum(SHIP_SIZES))
+                
+            else:
+                gameon = not stop_it
+                
+        print(f"player: {score_player} vs. pc: {score_pc}")
+        print(f"player targted: {hitlist_player}")
 main()
