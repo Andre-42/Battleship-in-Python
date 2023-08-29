@@ -153,27 +153,53 @@ def create_battlefield(battlefield):
 
 
 def start_game():
-    player = BATTLEFIELD_PLAYER
-    pc = BATTLEFIELD_PC
-    # create battlefield for player
-    player = create_battlefield(player)
-    # create battlefield for player
-    pc = create_battlefield(pc)
-    print("This is your fleet:")
-    print(pc)
-
+    """
+    This function uses the template battlefields to create the empty player fields.
+    It also creates several lists necessary for the game scoreing with all valid 
+    field names on the score board.
+    Columns are presentes as letters a,b,c,...
+    Rows are numbered 1,...
+    """
+    # pre requisit for battlefield update
     max_letter = BATTLEFIELD_PLAYER.shape[1]
     col_names = list(map(chr, range(97, max_letter+97)))
     max_number = BATTLEFIELD_PLAYER.shape[0]
 
     created_scoreboard = create_scoreboards(max_letter, col_names, max_number)
-    not_hit_player = created_scoreboard[0]
-    not_hit_pc = not_hit_player
-    hitlist_player = []
-    hitlist_pc = []
-    print(not_hit_pc)
-    return player, pc, not_hit_player, not_hit_pc, created_scoreboard
-            
+    not_hit_list_player = created_scoreboard[0].copy()
+    not_hit_list_pc = not_hit_list_player.copy()
+
+    # Create battlefields
+    player = create_battlefield(BATTLEFIELD_PLAYER.copy())
+    pc = create_battlefield(BATTLEFIELD_PC.copy())
+    
+    print("This is your fleet:")
+    map_ship_placement = np.full((BATTLEFIELD_SIZE[0] + 1, BATTLEFIELD_SIZE[1] + 1), '~', dtype=str)
+    
+    # Fill the top row with alphabet letters as column names
+    for col_idx, col_label in enumerate(col_names):
+        map_ship_placement[0, col_idx + 1] = col_label
+    
+    # Fill the leftmost column with row numbers
+    for row_idx in range(1, BATTLEFIELD_SIZE[0] + 1):
+        map_ship_placement[row_idx, 0] = str(row_idx)
+
+    # Mark ships with ^
+    for row_idx in range(1, BATTLEFIELD_SIZE[0] + 1):
+        for col_idx in range (1, BATTLEFIELD_SIZE[1] + 1):
+            if player[row_idx - 1][col_idx - 1]:
+                map_ship_placement[row_idx, col_idx] = '^'
+                
+    # print(map_ship_placement) but neatly
+    for row_idx in map_ship_placement:
+        print(' '.join(row_idx))
+        
+    return player, pc, not_hit_list_player, not_hit_list_pc, created_scoreboard
+
+created_scoreboard = create_scoreboards(max_letter, col_names, max_number)
+           
+
+# Functions for Playing the Game
 
 def end_game(command_stop):
     """
