@@ -111,7 +111,8 @@ def set_ship_inline(boardvector, startpos, shiplength):
     num_breaks = np.cumsum(boardvector)
     if initial_sum > 0:
         num_breaks[np.where(boardvector)[0]] = -1
-    unique_breaks, break_index, break_counts = np.unique(num_breaks, return_index=True, return_counts=True)
+    unique_breaks, break_index, break_counts = np.unique(num_breaks, 
+        return_index=True, return_counts=True)
     # prepare placement
     valid_counts = break_counts[unique_breaks >= 0]
     valid_indices = break_index[unique_breaks >= 0]
@@ -125,8 +126,7 @@ def set_ship_inline(boardvector, startpos, shiplength):
             if valid_n > 1:
                 start_idx = np.searchsorted(np.append(valid_positions, valid_ends), startpos)
             else:
-                start_idx = 0;
-                
+                start_idx = 0
             if start_idx > valid_n:
                 start_idx = start_idx - valid_n
             # determine position
@@ -155,7 +155,7 @@ def set_ship_inline(boardvector, startpos, shiplength):
         print("Error ship placement line 44")
     # check if ship is properly placed
     end_sum = np.sum(boardvector) - initial_sum
-    if not (end_sum == shiplength):
+    if not end_sum == shiplength:
         boardvector = boardvector_old
     return boardvector
 
@@ -282,8 +282,8 @@ def start_game():
         print(' '.join(row_idx))
     return player, pc, not_hit_list_player, not_hit_list_pc, created_scoreboard
 
-created_scoreboard = create_scoreboards(max_letter, col_names, max_number)
-           
+
+created_scoreboard = create_scoreboards(max_letter, col_names, max_number)           
 
 # Functions for Playing the Game
 
@@ -493,7 +493,6 @@ def main():
         print("This is how it looks, Capt'n:")
         for row in map_overview:
             print(' '.join(row))
-
         print(f"Player: {score_player} ({np.ceil((score_player/sum(SHIP_SIZES))*100)}%) vs. Computer: {score_pc} ({np.ceil((score_pc/sum(SHIP_SIZES))*100)}%)")
     # end game
     print("Game over!")
