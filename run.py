@@ -225,7 +225,7 @@ def create_battlefield(battlefield):
     return battlefield
 
 
-def create_scoreboards(max_letter, col_names, max_number):
+def create_scoreboards(max_letter_x, col_name_x, max_number_y):
     """
     This function creates a list with all valid target entries available on the board.
     not_hit: stringlist: a1, a2, ...
@@ -233,15 +233,15 @@ def create_scoreboards(max_letter, col_names, max_number):
     field_x: column coordinates for not_hit elements
     field_y: row coordinates for not_hit elements
     """
-    n_el = max_letter * max_number
+    n_el = max_letter_x * max_number_y
     not_hit = [None] * n_el
     field_index = [None] * n_el
     field_x = [None] * n_el
     field_y = [None] * n_el
     it_list = 0
-    for j in range(max_letter):
-        for i in range(max_number):
-            not_hit[it_list] = col_names[j] + str(i+1)
+    for j in range(max_letter_x):
+        for i in range(max_number_y):
+            not_hit[it_list] = col_name_x[j] + str(i+1)
             field_index[it_list] = it_list
             field_x[it_list] = j
             field_y[it_list] = i
@@ -258,9 +258,6 @@ def start_game():
     Rows are numbered 1,...
     """
     # pre requisit for battlefield update
-    max_letter = BATTLEFIELD_PLAYER.shape[1]
-    col_names = list(map(chr, range(97, max_letter+97)))
-    max_number = BATTLEFIELD_PLAYER.shape[0]
     created_scoreboard = create_scoreboards(max_letter, col_names, max_number)
     not_hit_list_player = created_scoreboard[0].copy()
     not_hit_list_pc = not_hit_list_player.copy()
