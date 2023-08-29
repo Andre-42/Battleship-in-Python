@@ -1,5 +1,7 @@
 import numpy as np
-from pprint import pprint
+import random
+import time
+from itertools import product
 
 SHIP_SIZES = [5, 4, 3, 3, 2]
 GAME_STATUS = True
