@@ -175,9 +175,11 @@ def start_game():
     return player, pc, not_hit_player, not_hit_pc, created_scoreboard
             
 
-def endGame(command_stop):
-    is_valid = np.isin(command_stop, ["stop", "s"])
-    return is_valid
+def end_game(command_stop):
+    """
+    This funtion returns True to initiate the end of a game.
+    """
+    return command_stop.lower() == "stop" or command_stop.lower() == "s"
 
 
 def play_game():
@@ -332,7 +334,7 @@ def main():
         
         if is_valid_command:
             # check for stop command
-            stop_it = endGame(user_command)
+            stop_it = end_game(user_command)
             
             if not stop_it:
                 # check for hit
