@@ -1,7 +1,10 @@
-import numpy as np
+"""
+This is a game of battleship.
+"""
 import random
 import time
-from itertools import product
+import numpy as np
+#from itertools import product
 
 # Global Constants and Variables
 SHIP_SIZES = [5, 4, 3, 3, 2]
@@ -50,10 +53,7 @@ def check_answer(fieldvalue):
     choice = input("Say Yea (Y) or Nei (N): \n")
     choice = choice.lower()
     choice = choice[0]
-    if choice == "y":
-        return True
-    else:
-        return False
+    return choice == "y"
 
 
 def request_gamelevel():
@@ -108,13 +108,13 @@ def set_ship_inline(boardvector, startpos, shiplength):
     """
     # check out boardvector for spaces
     boardvector_old = boardvector.copy()
-    initial_sum = np.sum(boardvector == True)
-    num_breaks = np.cumsum(boardvector == True)
+    initial_sum = np.sum(boardvector)
+    num_breaks = np.cumsum(boardvector)
     if initial_sum > 0:
         num_breaks[np.where(boardvector)[0]] = -1
     unique_breaks, break_index, break_counts = np.unique(num_breaks, return_index=True, return_counts=True)
     # prepare placement
-    valid_breaks = unique_breaks[unique_breaks >= 0]
+    #valid_breaks = unique_breaks[unique_breaks >= 0]
     valid_counts = break_counts[unique_breaks >= 0]
     valid_indices = break_index[unique_breaks >= 0]
     valid_ends = valid_indices + valid_counts - 1
@@ -156,7 +156,7 @@ def set_ship_inline(boardvector, startpos, shiplength):
         boardvector[ship_start:ship_end + 1] = True
         print("Error ship placement line 44")
     # check if ship is properly placed
-    end_sum = np.sum(boardvector == True) - initial_sum
+    end_sum = np.sum(boardvector) - initial_sum
     if not (end_sum == shiplength):
         boardvector = boardvector_old
     return boardvector
@@ -420,15 +420,18 @@ def get_coordinates_from_target(target):
 # Main Game Loop
 
 def main():
+    """
+    This is the main function controlling gaming and setup
+    """
     # global variables that are affected by the function
     global BATTLEFIELD_PLAYER, BATTLEFIELD_PC, BATTLEFIELD_SIZE, SHIP_SIZES, created_scoreboard
     # change Field size
     request_gamelevel()
     # Create the boards and other necessary variables
-    player, pc, not_hit_player, not_hit_pc, created_scoreboard = start_game()
+    player, enemy, not_hit_player, not_hit_pc, created_scoreboard = start_game()
     # Update BATTLEFIELD_PLAYER and BATTLEFIELD_PC
     BATTLEFIELD_PLAYER = player.copy()
-    BATTLEFIELD_PC = pc.copy()
+    BATTLEFIELD_PC = enemy.copy()
     # initiate scoring variables
     score_player = 0
     score_pc = 0
@@ -465,7 +468,7 @@ def main():
                     print(f"Hit! Target confirmed at: {user_command}")
                     score_player += 1
                 else:
-                    answer = np.random.randint(3)
+                    answer = random.randint(0, 2)
                     print(f"Sploosh! {answer_list[answer]}")
                 # Enemy attack
                 pc_command = computer_move(not_hit_pc)
@@ -494,9 +497,9 @@ def main():
         # Print the current map overview
         map_overview = generate_map_overview(hitlist_player, not_hit_player)
         # Add row names (numbers) and column names (letters) to the map overview
-        max_letter = BATTLEFIELD_PC.shape[1]
-        col_names = list(map(chr, range(97, max_letter + 97)))
-        row_names = list(map(str, range(1, BATTLEFIELD_PC.shape[0] + 1)))
+        #max_letter = BATTLEFIELD_PC.shape[1]
+        #col_names = list(map(chr, range(97, max_letter + 97)))
+        #row_names = list(map(str, range(1, BATTLEFIELD_PC.shape[0] + 1)))
         print("This is how it looks, Capt'n:")
         for row in map_overview:
             print(' '.join(row))
