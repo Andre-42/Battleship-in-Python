@@ -4,7 +4,6 @@ This is a game of battleship.
 import random
 import time
 import numpy as np
-#from itertools import product
 
 # Global Constants and Variables
 SHIP_SIZES = [5, 4, 3, 3, 2]
@@ -114,7 +113,6 @@ def set_ship_inline(boardvector, startpos, shiplength):
         num_breaks[np.where(boardvector)[0]] = -1
     unique_breaks, break_index, break_counts = np.unique(num_breaks, return_index=True, return_counts=True)
     # prepare placement
-    #valid_breaks = unique_breaks[unique_breaks >= 0]
     valid_counts = break_counts[unique_breaks >= 0]
     valid_indices = break_index[unique_breaks >= 0]
     valid_ends = valid_indices + valid_counts - 1
@@ -478,7 +476,6 @@ def main():
                 try:
                     not_hit_pc.remove(pc_command)
                     hitlist_pc.append(pc_command)
-                    #print(f"pc shot at: {hitlist_pc}")
                 except ValueError:
                     pass
                 # score the enemy 
@@ -496,10 +493,6 @@ def main():
                 game_on = not stop_it
         # Print the current map overview
         map_overview = generate_map_overview(hitlist_player, not_hit_player)
-        # Add row names (numbers) and column names (letters) to the map overview
-        #max_letter = BATTLEFIELD_PC.shape[1]
-        #col_names = list(map(chr, range(97, max_letter + 97)))
-        #row_names = list(map(str, range(1, BATTLEFIELD_PC.shape[0] + 1)))
         print("This is how it looks, Capt'n:")
         for row in map_overview:
             print(' '.join(row))
