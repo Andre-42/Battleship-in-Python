@@ -195,21 +195,26 @@ def play_game():
 
 
 def did_i_hit_something(target, player_id):
-    valid_input = created_scoreboard[0]
-    is_position = np.isin(valid_input, target)
-    is_position = np.concatenate(np.nonzero(is_position))
-    print((int(is_position)))
-    get_field_index = created_scoreboard[1]
-    get_field_index = get_field_index[is_position[0]]
-    get_x = created_scoreboard[2][get_field_index]
-    get_y = created_scoreboard[3][get_field_index]
+    """
+    The name is the function. Function gets x,y coordinates of target position 
+    and checks either the player or pc deployment board if there is a ship a that position.
+    It returns True for a valid hit.
+    """
+    field_index = created_scoreboard[1]
+    field_x = created_scoreboard[2]
+    field_y = created_scoreboard[3]
+    
+    target_index = field_index[created_scoreboard[0].index(target)]
+    target_x = field_x[target_index]
+    target_y = field_y[target_index]
+    
     if player_id == 1:
-        is_hit = BATTLEFIELD_PC[get_y, get_x]
+        is_hit = BATTLEFIELD_PC[target_y, target_x]
     else:
-        is_hit = BATTLEFIELD_PLAYER[get_y, get_x]
-    print(f"Hit comfirmed: {is_hit}")
+        is_hit = BATTLEFIELD_PLAYER[target_y, target_x]
+    
     return is_hit
-        
+
 
 def check_command(command, not_hit_yet):
     """
