@@ -184,12 +184,13 @@ def end_game(command_stop):
 
 def play_game():
     """
-    user Input for player.
+    Get user Input for player.
     """
     print("Targets should be provided as:")
     print(f" -letters for columns, {col_names[0]}...{col_names[max_letter-1]}")
     print(f" -numbers for rows, max({max_number})")
     print(" -example: a3, d8 or f1")
+    print("If you want to retreat say 'stop' or 's'")
     field = input("Type in your target coordinate:")
     return field
 
