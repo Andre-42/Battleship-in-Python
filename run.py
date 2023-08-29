@@ -3,7 +3,7 @@ import random
 import time
 from itertools import product
 
-# Global Constants
+# Global Constants and Variables
 SHIP_SIZES = [5, 4, 3, 3, 2]
 BATTLEFIELD_SIZE = (8, 8)
 
