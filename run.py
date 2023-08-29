@@ -211,35 +211,44 @@ def did_i_hit_something(target, player_id):
     return is_hit
         
 
-def check_command(command):
-    print("check command syntax")
-    # try:
+def check_command(command, not_hit_yet):
+    """
+    This function checks the user input for validity against allowed entries.
+    It will return True for valid target positions (inside game bounds) and if 
+    game aboard command is given.
+    False is returned for gibberish input and already called target positions.
+    """
     valid_input = created_scoreboard[0]
-    print(f"test input: {command},{type(command)} is part of ref{type(valid_input)}")
-    is_valid = np.isin(command, valid_input)
-    if is_valid == 0:
-        is_valid = np.isin(command, ["stop", "s"])
-        if is_valid:
-            print("Retreat command received.")
-            print("Game will be closed")
+
+    if command in valid_input:
+        
+        if command in not_hit_yet:
+            print(f"New target acquired: {command}")
+            print("Fire!")
+            time.sleep(1)
+            return True
+        
         else:
-            print("Your target coordinates are not correct. TRY again")
-            
-    else:
-        not_hit_yet = not_hit_pc
-        is_valid = np.isin(command, not_hit_yet)
-        if is_valid == 0:
             print("You hit that place already.")
-            isvalid = False
             was_hit = did_i_hit_something(command, 1)
+            
             if was_hit:
                 print(f"It was a direct hit at {command}")
             else:
                 print("We missed.")
-        else:
-            print(f"New target aquired: {command}")
-            print("Fire!")
-    return is_valid
+            time.sleep(3)
+            return False
+    
+    elif command in ["stop", "s"]:
+        print("Retreat command received.")
+        print("Game will be closed")
+        return True
+    
+    else:
+        print("Your target coordinates are not correct. TRY again")
+        time.sleep(3)
+        return False
+
 
 def computer_move(not_hit_rand):
     """
