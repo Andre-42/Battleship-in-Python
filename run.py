@@ -239,6 +239,59 @@ def check_command(command):
             print("Fire!")
     return is_valid
 
+def computer_move(not_hit_rand):
+    """
+    Choose the computer's move by randomly selecting a target that hasn't been hit yet.
+    """
+    return random.choice(not_hit_rand)
+
+def generate_map_overview(target_list, not_hit_list):
+    """
+    Create a nice little display of your shooting efforts. Including '~' waves,
+    'x' hits and 'w' sploooosh (miss).
+    """
+    map_overview = np.full((BATTLEFIELD_SIZE[0] + 1, BATTLEFIELD_SIZE[1] + 1), '~', dtype=str)
+    
+    # Fill the top row with alphabet letters as column names
+    for col_idx, col_label in enumerate(col_names):
+        map_overview[0, col_idx + 1] = col_label
+    
+    # Fill the leftmost column with row numbers
+    for row_idx in range(1, BATTLEFIELD_SIZE[0] + 1):
+        map_overview[row_idx, 0] = str(row_idx)
+    
+    # Still empty coordinates get filled with water
+    for target in not_hit_list:
+        target_y, target_x = get_coordinates_from_target(target)
+        map_overview[target_y + 1, target_x + 1] = '~'
+    
+    # Already shot targets get hit and splash marks
+    for target in target_list:
+        target_y, target_x = get_coordinates_from_target(target)
+        if BATTLEFIELD_PC[target_y, target_x]:
+            map_overview[target_y + 1, target_x + 1] = 'x'
+        else:
+            map_overview[target_y + 1, target_x + 1] = 'w'
+        
+    return map_overview
+
+
+def get_coordinates_from_target(target):
+    """
+    Aquires the x,y coodinates of the requested position to create the overview display.
+    """
+    field_index = created_scoreboard[1]
+    field_x = created_scoreboard[2]
+    field_y = created_scoreboard[3]
+    
+    target_index = field_index[created_scoreboard[0].index(target)]
+    target_x = field_x[target_index]
+    target_y = field_y[target_index]
+    
+    return target_y, target_x
+
+
+
 # Main Game Loop
 
 def main():
