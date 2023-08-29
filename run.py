@@ -72,7 +72,7 @@ def request_gamelevel():
         print("2. The North Sea sounds like good waters (type: 8 / medium)")
         print("3. Let's go on the big ocean! (type: 12 / large)")
         
-        choice = input("The man are ready, tell me your choice: ")
+        choice = input("The man are ready, tell me your choice: \n")
         choice = choice.lower()
         
         # check input
@@ -341,7 +341,7 @@ def play_game():
     print(f" -numbers for rows, max({max_number})")
     print(" -example: a3, d8 or f1")
     print("If you want to retreat say 'stop' or 's'")
-    field = input("Type in your target coordinate:")
+    field = input("Type in your target coordinate: \n")
     return field
 
 
