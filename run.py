@@ -94,34 +94,43 @@ def set_ship_random(set_battlefield, ship):
 
 
 def create_battlefield(battlefield):
+    """
+    This is a iterative approach to deploy a fleet of ships. It will deploy from largest
+    to smallest ship in descending order. Attention this is a double while loop!!!
+    This is just the shell function for the actual ship placement in 'set_ship_random'.
+    It will check if the ship was actually deployed and if not it will retry the deployment
+    until success or an aboard condition is reached (99 tries).
+    """
+    # deploy fleet
     redo = True
     while redo:
-        for idship in range(len(SHIP_SIZES)):
-            # print(ship)
-            ship = SHIP_SIZES[idship]
-            maxSum = np.cumsum(SHIP_SIZES)
-            maxSum = maxSum[idship]
+        # iterade through ship sizes
+        for ship_size in SHIP_SIZES:
+            max_sum = sum(SHIP_SIZES)
             tryagain = True
             it = 1
+
+            # try ship placement
             while tryagain:
-                sb = sum(sum(battlefield))
-                battlefield_new = set_ship_random(battlefield, ship)
-                sb2 = sum(sum(battlefield_new))
-                isset = ((sb2-sb) == ship) and (sb2 == maxSum)
-                print(f"ship {ship} is deployed: {isset}")
-                if isset:
+                initial_sum = np.sum(battlefield)
+                battlefield_new = set_ship_random(battlefield.copy(), ship_size)
+                new_sum = np.sum(battlefield_new)
+                is_ship_set = (new_sum - initial_sum == ship_size) and (new_sum <= max_sum)
+                #print(f"Ship size {ship_size} is deployed: {is_ship_set}")
+                
+                # check ship placement or try again
+                if is_ship_set:
                     battlefield = battlefield_new
                     tryagain = False
                 else:
-                    tryagain = tryagain and it < 100 and maxSum < sb
-                # print(f"{sb} and {sb2}, {isset}")
+                    tryagain = tryagain and it < 100 and new_sum < max_sum
                 it += 1
-                print(it)
-            redo = not (isset)
+            
+            # check if complete overhaul
+            redo = not is_ship_set
             if redo:
                 battlefield = np.zeros(BATTLEFIELD_SIZE, dtype=bool)
-
-    print(battlefield)
+    
     return battlefield
 
 
