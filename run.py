@@ -3,73 +3,175 @@ import random
 import time
 from itertools import product
 
+# Global Constants
 SHIP_SIZES = [5, 4, 3, 3, 2]
-GAME_STATUS = True
 BATTLEFIELD_SIZE = (8, 8)
-BATTLEFIELD_SIZE_S = (6, 6)
-BATTLEFIELD_SIZE_L = (12, 12)
+
 BATTLEFIELD_PLAYER = np.zeros(BATTLEFIELD_SIZE, dtype=bool)
-BATTLEFIELD_PC = BATTLEFIELD_PLAYER
+BATTLEFIELD_PC = BATTLEFIELD_PLAYER.copy()
 
 max_letter = BATTLEFIELD_PLAYER.shape[1]
 col_names = list(map(chr, range(97, max_letter+97)))
 max_number = BATTLEFIELD_PLAYER.shape[0]
 
+# Functions for Setting Up the Game
+
+def change_fieldsize(size_xbyx):
+    """
+    This function adjusts the fieldsize of the game and related reference variables in the global space.
+    """
+    # global variable declaration to effect changes
+    global BATTLEFIELD_SIZE, BATTLEFIELD_PLAYER, BATTLEFIELD_PC
+    global max_letter, col_names, max_number
+    
+    # change global variables
+    BATTLEFIELD_SIZE = (size_xbyx, size_xbyx)
+    BATTLEFIELD_PLAYER = np.zeros(BATTLEFIELD_SIZE, dtype=bool)
+    BATTLEFIELD_PC = BATTLEFIELD_PLAYER.copy()
+    
+    # ... other variable changes ...
+    max_letter = BATTLEFIELD_PLAYER.shape[1]
+    col_names = list(map(chr, range(97, max_letter+97)))
+    max_number = BATTLEFIELD_PLAYER.shape[0]
+
+
+def check_answer(fieldvalue):
+    """
+    Here you confirm your answer again. It will return a True value if you confirm.
+    Every false input or decline will return False.
+    """
+    # chose appropriate request text
+    if fieldvalue == 6:
+        print("You want to shoot fish in a barrel?")
+    elif fieldvalue == 8:
+        print("You want to go hunting in the North Sea?")
+    else:
+        print("You want to go out on the really big blue yonder?")
+    
+    # user decision
+    choice = input("Say Yea (Y) or Nei (N): \n")
+    choice = choice.lower()
+    choice = choice[0]
+    if choice == "y":
+        return True
+    else:
+        return False
+
+
+def request_gamelevel():
+    """
+    This function enables you to select a game size. The default value after 3 wrong inputs is 8x8.
+    """
+    strikes = 0
+    ask = True
+    while ask:
+        # get user input
+        print("Welcome to Battleship!")
+        print("How big an ocean do you want to sail on today, Capt'n?")
+        print("1. Shoot fish in a barrel (type: 6 / small)")
+        print("2. The North Sea sounds like good waters (type: 8 / medium)")
+        print("3. Let's go on the big ocean! (type: 12 / large)")
+        
+        choice = input("The man are ready, tell me your choice: ")
+        choice = choice.lower()
+        
+        # check input
+        if choice in ["1","6","small","barrel"]:
+            fieldsize = 6
+            confirm = check_answer(fieldsize)
+        elif choice in ["2","8","medium","sea"]:
+            fieldsize = 8
+            confirm = check_answer(fieldsize)
+        elif choice in ["3","12","large","ocean"]:
+            fieldsize = 12
+            confirm = check_answer(fieldsize)
+        else:
+            print("You are talking nonsense, Capt'n.")
+            print("Did you have to much to drink?")
+            confirm = False
+        
+        # check if question needs repeat
+        if confirm:
+            ask = False
+        else:
+            strikes += 1
+        
+        # default setting after 3 tries
+        if strikes >= 3:
+            ask = False
+            fieldsize = 8
+    change_fieldsize(fieldsize)
+
 
 def set_ship_inline(boardvector, startpos, shiplength):
     """
     This function defines the ship position within a column or row.
-    numbreaks enables the identification of unique fields within the vector
+    It identifies already used positions and finds the gaps.
+    It identifies gaps that are large enough for the ship (shiplength) and
+    tries to place the ship in a gap as close as possible to the prefered
+    startpos.
+    If the ship cannot be place it will not change the boardvector.
     """
-    numbreaks = np.cumsum(boardvector == True)
-    fields, fieldstart, fieldindex, fieldcounts = np.unique(numbreaks, return_index = True, return_inverse = True, return_counts = True)
-    #print(f"{fields},sid{fieldstart},{fieldindex},{fieldcounts}")
-    if (sum(fields > 0) > 0):
-        fieldcounts[fields > 0] = fieldcounts[fields > 0] - 1
-        fieldindex[fieldstart[fields > 0]] = -1
-    fieldvalid = fieldcounts >= shiplength
-    #print(f"{fields},sid{fieldstart},{fieldindex},{fieldcounts},{fieldvalid}")
-    if (sum(fieldvalid) > 0):
-        fieldwish = fieldindex[startpos]
-        getwish = sum(fieldwish == fields[fieldvalid]) > 0
-        #print(f"getwish: {getwish},  {fieldindex}")
-        if getwish:
-            u, poslast = np.unique(np.flip(fieldindex) == fieldwish, 
-                return_index=True)
-            poslast = len(fieldindex) - poslast - 1
-            u, posfirst = np.unique(fieldindex == fieldwish, 
-                return_index=True)
-            #print(f"{startpos} + {shiplength} -1, {poslast}")
-            #posend = [startpos + shiplength - 1]
-            #posend.extend(poslast)
-            #posend = min(posend)
-            #print(posend)
-            #posstart = posend - shiplength
-        else:
-            fieldwish = fields[fieldvalid]
-            fieldlen = fieldcounts[fieldvalid]
-            fieldwish = fieldwish[fieldlen == max(fieldlen)]
-            if len(fieldwish) > 1:
-                fieldwish = fieldwish[np.random.randint(len(fieldwish)-1)]
+    # check out boardvector for spaces
+    boardvector_old = boardvector.copy()
+    initial_sum = np.sum(boardvector == True)
+    num_breaks = np.cumsum(boardvector == True)
+    if initial_sum > 0:
+        num_breaks[np.where(boardvector)[0]] = -1
+    unique_breaks, break_index, break_counts = np.unique(num_breaks, return_index=True, return_counts=True)
+
+    # prepare placement
+    valid_breaks = unique_breaks[unique_breaks >= 0]
+    valid_counts = break_counts[unique_breaks >= 0]
+    valid_indices = break_index[unique_breaks >= 0]
+    valid_ends = valid_indices + valid_counts - 1
+
+    valid_positions = valid_indices[valid_counts >= shiplength]
+    valid_n = len(valid_positions)
+    
+    # ship placement procedure
+    try:
+        if valid_n > 0:
+            # find region fitting to suggested position
+            if valid_n > 1:
+                start_idx = np.searchsorted(np.append(valid_positions, valid_ends), startpos)
+            else:
+                start_idx = 0;
+                
+            if start_idx > valid_n:
+                start_idx = start_idx - valid_n
             
-            u, poslast = np.unique(np.flip(fieldindex) == fieldwish, 
-                return_index=True)
-            poslast = len(fieldindex) - poslast - 1
-            u, posfirst = np.unique(fieldindex == fieldwish, 
-                return_index=True)
-        posend = [startpos + shiplength - 1]
-        posend.extend(poslast)
-        posend = min(posend)
-        posfirst = min(posfirst)
-        #print(posend)
-        posstart = int(posend - shiplength)
-        if (posstart < 0) or (fieldindex[posstart] < 0):
-            posstart = int(posfirst)
-            posend = (posstart + shiplength)
-        print(f"ship: {shiplength}, wish:{fieldwish} , idx: {fieldindex}")
-        print(f"start {int(posstart)}, end {int(posend)}")
-        for i in range(int(posstart), int(posend)):
-            boardvector[i] = True
+            # determine position
+            ship_min = valid_positions[start_idx]
+            ship_max = valid_ends[start_idx]
+            ship_end = startpos + shiplength - 1
+            ship_end = min(ship_end, ship_max)
+            ship_start = ship_end - shiplength + 1
+
+            # place ship
+            if ship_start >= ship_min and ship_end <= ship_max:
+                boardvector[ship_start:ship_end + 1] = True
+        else:
+            # not sure if ever gets executed observed error may abort beforehand
+            ship_start = startpos
+            ship_end = ship_start + shiplength - 1
+            ship_end = min(ship_end, len(boardvector) - 1)
+            ship_start = ship_end - shiplength + 1
+            boardvector[ship_start:ship_end + 1] = True
+    except:
+        # error fix in try statement
+        ship_start = startpos
+        ship_end = ship_start + shiplength - 1
+        ship_end = min(ship_end, len(boardvector) - 1)
+        ship_start = ship_end - shiplength + 1
+        boardvector[ship_start:ship_end + 1] = True
+        print("Error ship placement line 44")
+
+    # check if ship is properly placed
+    end_sum = np.sum(boardvector == True) - initial_sum
+    if not (end_sum == shiplength):
+        boardvector = boardvector_old
+    
     return boardvector
 
 
