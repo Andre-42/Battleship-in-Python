@@ -16,33 +16,6 @@ col_names = list(map(chr, range(97, max_letter+97)))
 max_number = BATTLEFIELD_PLAYER.shape[0]
 
 
-def create_scoreboards(max_letter, col_names, max_number):
-    n_el = max_letter * max_number
-    not_hit = [None] * n_el
-    field_index = [None] * n_el
-    field_x = [None] * n_el
-    field_y = [None] * n_el
-    it_list = 0
-    for j in range(max_letter):
-        for i in range(max_number):
-            # print(it_list)
-            not_hit[it_list] = col_names[j] + str(i+1)
-            field_index[it_list] = it_list
-            field_x[it_list] = j
-            field_y[it_list] = i
-            it_list += 1
-    return not_hit, field_index, field_x, field_y
-
-
-created_scoreboard = create_scoreboards(max_letter, col_names, max_number)
-not_hit_player = created_scoreboard[0]
-not_hit_pc = not_hit_player
-hitlist_player = []
-hitlist_pc = []
-score_player = 0
-score_pc = 0
-
-
 def set_ship_inline(boardvector, startpos, shiplength):
     """
     This function defines the ship position within a column or row.
@@ -150,6 +123,32 @@ def create_battlefield(battlefield):
 
     print(battlefield)
     return battlefield
+
+
+def create_scoreboards(max_letter, col_names, max_number):
+    """
+    This function creates a list with all valid target entries available on the board.
+    not_hit: stringlist: a1, a2, ...
+    field_index: numerical index of board matrix: 0..number of fields-1
+    field_x: column coordinates for not_hit elements
+    field_y: row coordinates for not_hit elements
+    """
+    n_el = max_letter * max_number
+    not_hit = [None] * n_el
+    field_index = [None] * n_el
+    field_x = [None] * n_el
+    field_y = [None] * n_el
+    it_list = 0
+    
+    for j in range(max_letter):
+        for i in range(max_number):
+            not_hit[it_list] = col_names[j] + str(i+1)
+            field_index[it_list] = it_list
+            field_x[it_list] = j
+            field_y[it_list] = i
+            it_list += 1
+    
+    return not_hit, field_index, field_x, field_y
 
 
 def start_game():
@@ -332,7 +331,6 @@ def get_coordinates_from_target(target):
     target_y = field_y[target_index]
     
     return target_y, target_x
-
 
 
 # Main Game Loop
