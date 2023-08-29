@@ -493,7 +493,8 @@ def main():
         print("This is how it looks, Capt'n:")
         for row in map_overview:
             print(' '.join(row))
-        print(f"Player: {score_player} ({np.ceil((score_player/sum(SHIP_SIZES))*100)}%) vs. Computer: {score_pc} ({np.ceil((score_pc/sum(SHIP_SIZES))*100)}%)")
+        print(f"Player: {score_player} ({np.ceil((score_player/sum(SHIP_SIZES))*100)}%) 
+            vs. Computer: {score_pc} ({np.ceil((score_pc/sum(SHIP_SIZES))*100)}%)")
     # end game
     print("Game over!")
     if score_pc > score_player:
