@@ -75,21 +75,35 @@ def set_ship_inline(boardvector, startpos, shiplength):
 
 def set_ship_random(set_battlefield, ship):
     """
-    This function defines the column or row for a new ship position
+    This function defines the column or row for a new ship position.
+    It converts every row or column selection into a vector and
+    calls the set_ship_inline function to place a ship in the vector.
+    After ship placement the vector is put back into the correct 
+    column or row.
     """
-    pos_x = np.random.randint(BATTLEFIELD_SIZE[1]-1)
-    pos_y = np.random.randint(BATTLEFIELD_SIZE[0]-1)
-    row_xy = set_battlefield[pos_y, :]
-    col_xy = set_battlefield[:, pos_x]
+    # find random deployment position
+    max_x = BATTLEFIELD_SIZE[1] - 1
+    max_y = BATTLEFIELD_SIZE[0] - 1
+    
+    pos_x = np.random.randint(max_x)
+    pos_y = np.random.randint(max_y)
+    
+    # select row or column for ship placement
     roworcol = np.random.randint(2)
     if roworcol == 1:
-        boardvector = set_ship_inline(row_xy, pos_x, ship)
-        if (boardvector != row_xy).all():
-            set_battlefield[pos_y, :] = boardvector
+        boardvector = set_battlefield[pos_y, :]
     else:
-        boardvector = set_ship_inline(col_xy, pos_y, ship)
-        if (boardvector != col_xy).all():
-            set_battlefield[:, pos_x] = boardvector
+        boardvector = set_battlefield[:, pos_x]
+    
+    # place ship in vector
+    boardvector = set_ship_inline(boardvector, pos_x if roworcol == 1 else pos_y, ship)
+    
+    # set boardvector back into the battlefield
+    if roworcol == 1:
+        set_battlefield[pos_y, :] = boardvector
+    else:
+        set_battlefield[:, pos_x] = boardvector
+    
     return set_battlefield
 
 
