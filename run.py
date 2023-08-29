@@ -239,51 +239,124 @@ def check_command(command):
             print("Fire!")
     return is_valid
 
+# Main Game Loop
 
 def main():
-    """ 
-    main game function
-    """
-    maps = start_game()
-    BATTLEFIELD_PLAYER = maps[0]
-    BATTLEFIELD_PC = maps[1]
-    created_scoreboard = maps[4]
-    not_hit_player = maps[2]
-    not_hit_pc = maps[3]
+    # global variables that are affected by the function
+    global BATTLEFIELD_PLAYER, BATTLEFIELD_PC, BATTLEFIELD_SIZE, SHIP_SIZES, created_scoreboard
+    
+    # change Field size
+    request_gamelevel()
+    
+    # Create the boards and other necessary variables
+    player, pc, not_hit_player, not_hit_pc, created_scoreboard = start_game()
+    
+    # Update BATTLEFIELD_PLAYER and BATTLEFIELD_PC
+    BATTLEFIELD_PLAYER = player.copy()
+    BATTLEFIELD_PC = pc.copy()
+
     score_player = 0
     score_pc = 0
-    print("Welcome to a game of battleship.")
+    hitlist_player = []
+    hitlist_pc = []
+    answer_list = ["My blind grandma could have shot better!",
+                   "How much rum did you have for breakfast, Capt'n?",
+                   "That one was not quite shooting fish in a barrel..."]
+
+    print("Welcome to a game of Battleship.")
     print("Your fleet is deployed and ready to hunt.")
-    print("This is your fleet:")
-    print(BATTLEFIELD_PLAYER)
-    gameon = True
-    while gameon:
+    print("Be aware of the fogbank. Reports say it is full of enemy ships.")
+    
+    # the game begins
+    game_on = True
+    while game_on:
+        # get user command and transfer to lower case
         user_command = play_game()
         user_command = user_command.lower()
-        validity_result = check_command(user_command)
-        if validity_result:
+
+        # check input and act 
+        is_valid_command = check_command(user_command, not_hit_player)
+        
+        if is_valid_command:
+            # check for stop command
             stop_it = endGame(user_command)
-            print(stop_it)
+            
             if not stop_it:
+                # check for hit
                 hit = did_i_hit_something(user_command, 1)
-                print(user_command)
-                print(not_hit_player)
+                
+                # remove command from possible commands
                 try:
                     not_hit_player.remove(user_command)
                     hitlist_player.append(user_command)
-                except NameError:
-                    print("usercommand failed")
+                except ValueError:
+                    pass
+                
+                # score the shot
                 if hit:
                     print(f"Hit! Target confirmed at: {user_command}")
                     score_player += 1
                 else:
-                    print("no hit")
-                gameon = not (score_player >= sum(SHIP_SIZES) or\
-                    score_pc >= sum(SHIP_SIZES))
+                    answer = np.random.randint(3)
+                    print(f"Sploosh! {answer_list[answer]}")
+
+                # Enemy attack
+                pc_command = computer_move(not_hit_pc)
+                # check for hit
+                hit_pc = did_i_hit_something(pc_command, 2)
                 
+                # remove command from possible commands
+                try:
+                    not_hit_pc.remove(pc_command)
+                    hitlist_pc.append(pc_command)
+                    #print(f"pc shot at: {hitlist_pc}")
+                except ValueError:
+                    pass
+
+                # score the enemy 
+                if hit_pc:
+                    print(f"The enemy scored a hit at: {pc_command}")
+                    print("Get your swimaids out!")
+                    score_pc += 1
+                else:
+                    print(f"Enemy shot at: {pc_command} and missed, Sir.")
+                
+                # check if game can be continued, are any ships left floating?
+                game_on = not (score_player >= sum(SHIP_SIZES) or score_pc >= sum(SHIP_SIZES))
+                # Have you shot all your cannons?
+                game_on = game_on and (len(not_hit_player) > 0 or len(not_hit_pc) > 0)
             else:
-                gameon = not stop_it
-                
-        print(f"player: {score_player} vs. pc: {score_pc}")
-        print(f"player targted: {hitlist_player}")
+                game_on = not stop_it
+
+        # Print the current map overview
+        map_overview = generate_map_overview(hitlist_player, not_hit_player)
+
+        # Add row names (numbers) and column names (letters) to the map overview
+        max_letter = BATTLEFIELD_PC.shape[1]
+        col_names = list(map(chr, range(97, max_letter + 97)))
+        row_names = list(map(str, range(1, BATTLEFIELD_PC.shape[0] + 1)))
+
+        #map_overview = [[''] + col_names] + [[row_names[i]] + row for i, row in enumerate(map_overview)]
+
+        print("This is how it looks, Capt'n:")
+        for row in map_overview:
+            print(' '.join(row))
+
+        print(f"Player: {score_player} ({np.ceil((score_player/sum(SHIP_SIZES))*100)}%) vs. Computer: {score_pc} ({np.ceil((score_pc/sum(SHIP_SIZES))*100)}%)")
+        #print(f"Player's targets: {hitlist_player}")
+
+    print("Game over!")
+    if score_pc > score_player:
+        print("It was an honor, Sir...")
+        print("but the Capt'n goes down with the ship.")
+    elif score_pc == score_player:
+        print("Well, wet feet are better than sinking. Ey, Capt'n?")
+    else:
+        print("A jolly good win Sir. Let's see how the rum is fairing.")
+    
+    time.sleep(5)
+    print("Oh god, I can't stand upright anymore. God night!")
+    time.sleep(5)
+
+
 main()
