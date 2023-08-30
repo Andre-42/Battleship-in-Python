@@ -13,26 +13,28 @@ This version of battleship allows the player to choose between 3 different gameb
 - barrel / small / 6(x6)
 - sea / medium / 8(x8)
 - ocean / large / 12(x12)
-![First prompt in game.](image.png)
+![First prompt in game.](https://github.com/Andre-42/Battleship-in-Python/assets/135899198/d5194662-8247-467c-bb88-0b38411a58c7)
 If you don't choose a size after 3 tries it will be set to default (8x8).
 
 Once the player decides apon a field size, 2 random ship deployments are created with the players deployment being shown in the command window at the beginning of the game. Ships are marked by '^'. It's subtle but it wouldn't be any different out in the big yonder.
 The number of ships is set to 5 by default. Each player gets a 5 cell, two 4 cell, two 3 cell and one 2 cell ship.
 For now ships are set at random but it is written in a way that the randomization could be easily substituted with a user input function without large changes to pre-existing functions.
 
-![Ship deployment](image-1.png)
+![Ship deployment](https://github.com/Andre-42/Battleship-in-Python/assets/135899198/a360866f-b0a9-49ab-a10b-965ef0167213)
+
 You will notice the player is than asked for command instructions. Instructions on what kind of commands are required are provided.
 
-![Hit succesful](image-2.png)
+![Hit succesful](https://github.com/Andre-42/Battleship-in-Python/assets/135899198/9c79e9d1-0f0f-4146-943c-8fa73cff806b)
 If you type in a valid target and get a hit, the command printout will tell you where you shot and if it was succesful. It will also tell you the move of the pc opponent before showing you a status map with an x marking the spot where you hit a ship, followed by a score sheet with your progress.
 
-![No hit outcome](image-3.png)
+![No hit outcome](![image](https://github.com/Andre-42/Battleship-in-Python/assets/135899198/1ab7d8b8-1827-4eca-b430-f387b9823065)
+)
 If you don't hit something, you will notice 1 out of 3 random comments about your skills in hitting targets and see your miss displayed with 'w' on the map print. This looks the most like a cannonball droping in the water.
 
-![Invalid command input](image-4.png)
+![Invalid command input](https://github.com/Andre-42/Battleship-in-Python/assets/135899198/a23de827-f3c8-4b04-99bb-dc4e6bc6cf4d)
 If you want to shoot at invalid positions. The command will not be executed and you will be asked to try again until you give a valid command. Note that already used valid targets can not be used again as valid input a second time. The program doesn't allow you to shoot the same position twice.
 
-![End the game](image-5.png)
+![End the game](https://github.com/Andre-42/Battleship-in-Python/assets/135899198/035f3e57-7dc7-4651-aee4-296c81c25864)
 You can end the game at anytime by typing 'stop' or 's' and the program will sum up your current progress with another comment depending on the outcome. After which the program will exit. Easy and simple.
 You can't call the game to stop before you started playing i.e., when you are in the section about choposing the board size.
 
