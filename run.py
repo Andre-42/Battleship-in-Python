@@ -18,9 +18,10 @@ max_number = BATTLEFIELD_PLAYER.shape[0]
 
 # Functions for Setting Up the Game
 
+
 def change_fieldsize(size_xbyx):
     """
-    This function adjusts the fieldsize of the game 
+    This function adjusts the fieldsize of the game
     and related reference variables in the global space.
     """
     # global variable declaration to effect changes
@@ -38,7 +39,8 @@ def change_fieldsize(size_xbyx):
 
 def check_answer(fieldvalue):
     """
-    Here you confirm your answer again. It will return a True value if you confirm.
+    Here you confirm your answer again.
+    It will return a True value if you confirm.
     Every false input or decline will return False.
     """
     # chose appropriate request text
@@ -57,7 +59,8 @@ def check_answer(fieldvalue):
 
 def request_gamelevel():
     """
-    This function enables you to select a game size. The default value after 3 wrong inputs is 8x8.
+    This function enables you to select a game size.
+    The default value after 3 wrong inputs is 8x8.
     """
     strikes = 0
     ask = True
@@ -71,13 +74,13 @@ def request_gamelevel():
         choice = input("The man are ready, tell me your choice: \n")
         choice = choice.lower()
         # check input
-        if choice in ["1","6","small","barrel"]:
+        if choice in ["1", "6", "small", "barrel"]:
             fieldsize = 6
             confirm = check_answer(fieldsize)
-        elif choice in ["2","8","medium","sea"]:
+        elif choice in ["2", "8", "medium", "sea"]:
             fieldsize = 8
             confirm = check_answer(fieldsize)
-        elif choice in ["3","12","large","ocean"]:
+        elif choice in ["3", "12", "large", "ocean"]:
             fieldsize = 12
             confirm = check_answer(fieldsize)
         else:
@@ -111,8 +114,9 @@ def set_ship_inline(boardvector, startpos, shiplength):
     num_breaks = np.cumsum(boardvector)
     if initial_sum > 0:
         num_breaks[np.where(boardvector)[0]] = -1
-    unique_breaks, break_index, break_counts = np.unique(num_breaks, 
-        return_index=True, return_counts=True)
+    unique_breaks, break_index, break_counts = np.unique(num_breaks,
+                                                         return_index=True,
+                                                         return_counts=True)
     # prepare placement
     valid_counts = break_counts[unique_breaks >= 0]
     valid_indices = break_index[unique_breaks >= 0]
@@ -124,7 +128,8 @@ def set_ship_inline(boardvector, startpos, shiplength):
         if valid_n > 0:
             # find region fitting to suggested position
             if valid_n > 1:
-                start_idx = np.searchsorted(np.append(valid_positions, valid_ends), startpos)
+                start_idx = np.searchsorted(np.append(valid_positions,
+                                            valid_ends), startpos)
             else:
                 start_idx = 0
             if start_idx > valid_n:
@@ -139,13 +144,13 @@ def set_ship_inline(boardvector, startpos, shiplength):
             if ship_start >= ship_min and ship_end <= ship_max:
                 boardvector[ship_start:ship_end + 1] = True
         else:
-            # not sure if ever gets executed observed error may abort beforehand
+            # not sure if ever gets executed observed error may abort before
             ship_start = startpos
             ship_end = ship_start + shiplength - 1
             ship_end = min(ship_end, len(boardvector) - 1)
             ship_start = ship_end - shiplength + 1
             boardvector[ship_start:ship_end + 1] = True
-    except:
+    except Exception:
         # error fix in try statement
         ship_start = startpos
         ship_end = ship_start + shiplength - 1
@@ -165,7 +170,7 @@ def set_ship_random(set_battlefield, ship):
     This function defines the column or row for a new ship position.
     It converts every row or column selection into a vector and
     calls the set_ship_inline function to place a ship in the vector.
-    After ship placement the vector is put back into the correct 
+    After ship placement the vector is put back into the correct
     column or row.
     """
     # find random deployment position
@@ -180,7 +185,8 @@ def set_ship_random(set_battlefield, ship):
     else:
         boardvector = set_battlefield[:, pos_x]
     # place ship in vector
-    boardvector = set_ship_inline(boardvector, pos_x if roworcol == 1 else pos_y, ship)
+    boardvector = set_ship_inline(boardvector,
+                                  pos_x if roworcol == 1 else pos_y, ship)
     # set boardvector back into the battlefield
     if roworcol == 1:
         set_battlefield[pos_y, :] = boardvector
@@ -191,11 +197,12 @@ def set_ship_random(set_battlefield, ship):
 
 def create_battlefield(battlefield):
     """
-    This is a iterative approach to deploy a fleet of ships. It will deploy from largest
-    to smallest ship in descending order. Attention this is a double while loop!!!
-    This is just the shell function for the actual ship placement in 'set_ship_random'.
-    It will check if the ship was actually deployed and if not it will retry the deployment
-    until success or an aboard condition is reached (99 tries).
+    This is a iterative approach to deploy a fleet of ships. It will deploy
+    from largest to smallest ship in descending order. Attention this is a
+    double while loop!!! This is just the shell function for the actual ship
+    placement in 'set_ship_random'. It will check if the ship was actually
+    deployed and if not it will retry the deployment until success or an
+    aboard condition is reached (99 tries).
     """
     # deploy fleet
     redo = True
@@ -208,9 +215,12 @@ def create_battlefield(battlefield):
             # try ship placement
             while tryagain:
                 initial_sum = np.sum(battlefield)
-                battlefield_new = set_ship_random(battlefield.copy(), ship_size)
+                battlefield_new = set_ship_random(battlefield.copy(),
+                                                  ship_size)
                 new_sum = np.sum(battlefield_new)
-                is_ship_set = (new_sum - initial_sum == ship_size) and (new_sum <= max_sum)
+                is_ship_set = (new_sum -
+                               initial_sum == ship_size) and (new_sum <=
+                                                              max_sum)
                 # check ship placement or try again
                 if is_ship_set:
                     battlefield = battlefield_new
@@ -227,7 +237,8 @@ def create_battlefield(battlefield):
 
 def create_scoreboards(max_letter_x, col_name_x, max_number_y):
     """
-    This function creates a list with all valid target entries available on the board.
+    This function creates a list with all valid target entries available
+    on the board.
     not_hit: stringlist: a1, a2, ...
     field_index: numerical index of board matrix: 0..number of fields-1
     field_x: column coordinates for not_hit elements
@@ -251,9 +262,9 @@ def create_scoreboards(max_letter_x, col_name_x, max_number_y):
 
 def start_game():
     """
-    This function uses the template battlefields to create the empty player fields.
-    It also creates several lists necessary for the game scoreing with all valid 
-    field names on the score board.
+    This function uses the template battlefields to create the empty player
+    fields. It also creates several lists necessary for the game scoreing with
+    all valid field names on the score board.
     Columns are presentes as letters a,b,c,...
     Rows are numbered 1,...
     """
@@ -265,7 +276,8 @@ def start_game():
     player = create_battlefield(BATTLEFIELD_PLAYER.copy())
     pc = create_battlefield(BATTLEFIELD_PC.copy())
     print("This is your fleet:")
-    map_ship_placement = np.full((BATTLEFIELD_SIZE[0] + 1, BATTLEFIELD_SIZE[1] + 1), '~', dtype=str)
+    map_ship_placement = np.full((BATTLEFIELD_SIZE[0] + 1,
+                                 BATTLEFIELD_SIZE[1] + 1), '~', dtype=str)
     # Fill the top row with alphabet letters as column names
     for col_idx, col_label in enumerate(col_names):
         map_ship_placement[0, col_idx + 1] = col_label
@@ -274,7 +286,7 @@ def start_game():
         map_ship_placement[row_idx, 0] = str(row_idx)
     # Mark ships with ^
     for row_idx in range(1, BATTLEFIELD_SIZE[0] + 1):
-        for col_idx in range (1, BATTLEFIELD_SIZE[1] + 1):
+        for col_idx in range(1, BATTLEFIELD_SIZE[1] + 1):
             if player[row_idx - 1][col_idx - 1]:
                 map_ship_placement[row_idx, col_idx] = '^'
     # print(map_ship_placement) but neatly
@@ -283,9 +295,9 @@ def start_game():
     return player, pc, not_hit_list_player, not_hit_list_pc, created_scoreboard
 
 
-created_scoreboard = create_scoreboards(max_letter, col_names, max_number)           
-
+created_scoreboard = create_scoreboards(max_letter, col_names, max_number)
 # Functions for Playing the Game
+
 
 def end_game(command_stop):
     """
@@ -309,9 +321,9 @@ def play_game():
 
 def did_i_hit_something(target, player_id):
     """
-    The name is the function. Function gets x,y coordinates of target position 
-    and checks either the player or pc deployment board if there is a ship a that position.
-    It returns True for a valid hit.
+    The name is the function. Function gets x,y coordinates of target position
+    and checks either the player or pc deployment board if there is a ship a
+    that position. It returns True for a valid hit.
     """
     # get indices
     field_index = created_scoreboard[1]
@@ -331,7 +343,7 @@ def did_i_hit_something(target, player_id):
 def check_command(command, not_hit_yet):
     """
     This function checks the user input for validity against allowed entries.
-    It will return True for valid target positions (inside game bounds) and if 
+    It will return True for valid target positions (inside game bounds) and if
     game aboard command is given.
     False is returned for gibberish input and already called target positions.
     """
@@ -367,16 +379,19 @@ def check_command(command, not_hit_yet):
 
 def computer_move(not_hit_rand):
     """
-    Choose the computer's move by randomly selecting a target that hasn't been hit yet.
+    Choose the computer's move by randomly selecting a target that hasn't been
+    hit yet.
     """
     return random.choice(not_hit_rand)
+
 
 def generate_map_overview(target_list, not_hit_list):
     """
     Create a nice little display of your shooting efforts. Including '~' waves,
     'x' hits and 'w' sploooosh (miss).
     """
-    map_overview = np.full((BATTLEFIELD_SIZE[0] + 1, BATTLEFIELD_SIZE[1] + 1), '~', dtype=str)
+    map_overview = np.full((BATTLEFIELD_SIZE[0] + 1,
+                            BATTLEFIELD_SIZE[1] + 1), '~', dtype=str)
     # Fill the top row with alphabet letters as column names
     for col_idx, col_label in enumerate(col_names):
         map_overview[0, col_idx + 1] = col_label
@@ -399,7 +414,8 @@ def generate_map_overview(target_list, not_hit_list):
 
 def get_coordinates_from_target(target):
     """
-    Aquires the x,y coodinates of the requested position to create the overview display.
+    Aquires the x,y coodinates of the requested position to create the
+    overview display.
     """
     # get field coordinate reference data
     field_index = created_scoreboard[1]
@@ -419,14 +435,15 @@ def main():
     This is the main function controlling gaming and setup
     """
     # global variables that are affected by the function
-    global BATTLEFIELD_PLAYER, BATTLEFIELD_PC, BATTLEFIELD_SIZE, SHIP_SIZES, created_scoreboard
+    global BATTLEFIELD_PLAYER, BATTLEFIELD_PC, BATTLEFIELD_SIZE, SHIP_SIZES
+    global created_scoreboard
     # change Field size
     request_gamelevel()
     # Create the boards and other necessary variables
-    player, enemy, not_hit_player, not_hit_pc, created_scoreboard = start_game()
+    player, pc, not_hit_player, not_hit_pc, created_scoreboard = start_game()
     # Update BATTLEFIELD_PLAYER and BATTLEFIELD_PC
     BATTLEFIELD_PLAYER = player.copy()
-    BATTLEFIELD_PC = enemy.copy()
+    BATTLEFIELD_PC = pc.copy()
     # initiate scoring variables
     score_player = 0
     score_pc = 0
@@ -444,7 +461,7 @@ def main():
         # get user command and transfer to lower case
         user_command = play_game()
         user_command = user_command.lower()
-        # check input and act 
+        # check input and act
         is_valid_command = check_command(user_command, not_hit_player)
         if is_valid_command:
             # check for stop command
@@ -475,7 +492,7 @@ def main():
                     hitlist_pc.append(pc_command)
                 except ValueError:
                     pass
-                # score the enemy 
+                # score the enemy
                 if hit_pc:
                     print(f"The enemy scored a hit at: {pc_command}")
                     print("Get your swimaids out!")
@@ -483,9 +500,11 @@ def main():
                 else:
                     print(f"Enemy shot at: {pc_command} and missed, Sir.")
                 # check if game can be continued, are any ships left floating?
-                game_on = not (score_player >= sum(SHIP_SIZES) or score_pc >= sum(SHIP_SIZES))
+                game_on = not (score_player >=
+                               sum(SHIP_SIZES) or score_pc >= sum(SHIP_SIZES))
                 # Have you shot all your cannons?
-                game_on = game_on and (len(not_hit_player) > 0 or len(not_hit_pc) > 0)
+                game_on = (game_on and (len(not_hit_player) > 0 or
+                           len(not_hit_pc) > 0))
             else:
                 game_on = not stop_it
         # Print the current map overview
@@ -493,8 +512,10 @@ def main():
         print("This is how it looks, Capt'n:")
         for row in map_overview:
             print(' '.join(row))
-        print(f"Player: {score_player} ({np.ceil((score_player/sum(SHIP_SIZES))*100)}%) \
-            vs. Computer: {score_pc} ({np.ceil((score_pc/sum(SHIP_SIZES))*100)}%)")
+        print(f"Player: {score_player} \
+              ({np.ceil((score_player/sum(SHIP_SIZES))*100)}%) \
+              vs. Computer: {score_pc} \
+              ({np.ceil((score_pc/sum(SHIP_SIZES))*100)}%)")
     # end game
     print("Game over!")
     if score_pc > score_player:
