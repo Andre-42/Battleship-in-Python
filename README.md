@@ -53,6 +53,8 @@ So I spend a lot of time running those functions under different input scenarios
 
 I had to switch writing the code on multiple platforms during the development due to issues with IDEs. I have constantly issues with CodeAnywhere timebudgets. I guess because it counts on when its idle. It's gotten verse with every project. Because I could do this project solely in python I actually developed most code using jupyter-lab after I had the core functions build in CodeAnywhere and it stopped working again. Once I had it build and running properly I went back to tutor support and they helped me switch to Gitpod to finish commiting and deployment preparation because they couldn't get CodeAnywhere to unlock either. 
 
+## Vaildator Pylint on console
+
 Once everything was running on Gitpod I tested the code with pylint and improved it according to the outcome of the test while making sure it didn't cause unexpected issues to employ those changes.
 My pylint progress and the final test details are stated below:
 
@@ -66,32 +68,36 @@ Your code has been rated at 9.05/10 (previous run: 8.37/10, +0.68)
 Your code has been rated at 9.24/10 (previous run: 9.05/10, +0.19)
 ------------------------------------------------------------------
 Your code has been rated at 9.34/10 (previous run: 9.24/10, +0.10)
-
-************* Module run
-run.py:114:68: C0303: Trailing whitespace (trailing-whitespace)
-run.py:286:74: C0303: Trailing whitespace (trailing-whitespace)
-run.py:447:29: C0303: Trailing whitespace (trailing-whitespace)
-run.py:478:33: C0303: Trailing whitespace (trailing-whitespace)
-run.py:27:4: W0603: Using the global statement (global-statement)
-run.py:28:4: W0603: Using the global statement (global-statement)
-run.py:99:0: R0914: Too many local variables (20/15) (too-many-locals)
-run.py:148:4: W0702: No exception type(s) specified (bare-except)
-run.py:207:12: C0103: Variable name "it" doesn't conform to snake_case naming style (invalid-name)
-run.py:220:16: C0103: Variable name "it" doesn't conform to snake_case naming style (invalid-name)
-run.py:261:4: W0621: Redefining name 'created_scoreboard' from outer scope (line 286) (redefined-outer-name)
-run.py:266:4: C0103: Variable name "pc" doesn't conform to snake_case naming style (invalid-name)
-run.py:342:8: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
-run.py:417:0: R0914: Too many local variables (19/15) (too-many-locals)
-run.py:422:4: W0602: Using global for 'BATTLEFIELD_SIZE' but no assignment is done (global-variable-not-assigned)
-run.py:422:4: W0602: Using global for 'SHIP_SIZES' but no assignment is done (global-variable-not-assigned)
-run.py:417:0: R0912: Too many branches (14/12) (too-many-branches)
-run.py:417:0: R0915: Too many statements (65/50) (too-many-statements)
-
 ------------------------------------------------------------------
 Your code has been rated at 9.41/10 (previous run: 9.34/10, +0.07)
 
-I think the remaining issues are mostly esthetic and not necessary given the left time constraints for deployment without major changes to the program set up (this relates mainly to Too many branches, statements, variables issues from the test). The global statements are necessary as far as I can see to avoid issues in the program. The 'else' issue would break the function if corrected as suggested.
+************* Module run
+run.py:28:4: W0603: Using the global statement (global-statement)
+run.py:29:4: W0603: Using the global statement (global-statement)
+run.py:102:0: R0914: Too many local variables (20/15) (too-many-locals)
+run.py:153:11: W0718: Catching too general exception Exception (broad-exception-caught)
+run.py:214:12: C0103: Variable name "it" doesn't conform to snake_case naming style (invalid-name)
+run.py:230:16: C0103: Variable name "it" doesn't conform to snake_case naming style (invalid-name)
+run.py:272:4: W0621: Redefining name 'created_scoreboard' from outer scope (line 298) (redefined-outer-name)
+run.py:277:4: C0103: Variable name "pc" doesn't conform to snake_case naming style (invalid-name)
+run.py:354:8: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+run.py:433:0: R0914: Too many local variables (19/15) (too-many-locals)
+run.py:438:4: W0602: Using global for 'BATTLEFIELD_SIZE' but no assignment is done (global-variable-not-assigned)
+run.py:438:4: W0602: Using global for 'SHIP_SIZES' but no assignment is done (global-variable-not-assigned)
+run.py:439:4: W0603: Using the global statement (global-statement)
+run.py:443:12: C0103: Variable name "pc" doesn't conform to snake_case naming style (invalid-name)
+run.py:433:0: R0912: Too many branches (14/12) (too-many-branches)
+run.py:433:0: R0915: Too many statements (66/50) (too-many-statements)
 
+------------------------------------------------------------------
+Your code has been rated at 9.47/10 (previous run: 9.41/10, +0.07)
+
+I think the remaining issues are mostly esthetic and not necessary given the left time constraints for deployment without major changes to the program set up (this relates mainly to too many branches, statements, variables issues from the test). The global statements are necessary as far as I can see to avoid issues in the program. The 'else' issue would break the function if corrected as suggested.
+
+## Validator PEP8
+
+![PEP8 result](image-6.png)
+PEP8 validator showed no errors online.
 ## Creating the Heroku app
 
 When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
