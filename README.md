@@ -3,6 +3,8 @@
 Welcome,
 
 This is my Python version of battleship as of: **August 30, 2023**
+![Responsiv display](https://github.com/Andre-42/Battleship-in-Python/assets/135899198/c37b1971-e750-4223-a463-586370c0f789)
+
 
 ## Battleship in python and its features
 
@@ -19,27 +21,33 @@ The number of ships is set to 5 by default. Each player gets a 5 cell, two 4 cel
 For now ships are set at random but it is written in a way that the randomization could be easily substituted with a user input function without large changes to pre-existing functions.
 
 ![Ship deployment](image-1.png)
-You will notice the player is than asked for command in structions. Instructions on what kind of commands are required are provided.
+You will notice the player is than asked for command instructions. Instructions on what kind of commands are required are provided.
+
 ![Hit succesful](image-2.png)
 If you type in a valid target and get a hit, the command printout will tell you where you shot and if it was succesful. It will also tell you the move of the pc opponent before showing you a status map with an x marking the spot where you hit a ship, followed by a score sheet with your progress.
+
 ![No hit outcome](image-3.png)
 If you don't hit something, you will notice 1 out of 3 random comments about your skills in hitting targets and see your miss displayed with 'w' on the map print. This looks the most like a cannonball droping in the water.
+
 ![Invalid command input](image-4.png)
-If you want to shoot at invalid positions. The command will not be executed and you will be asked to try again until you give a valid command. Note that already used valid targets can not be used as valid input a second time. The program doesn't allow you to shoot the same position twice.
+If you want to shoot at invalid positions. The command will not be executed and you will be asked to try again until you give a valid command. Note that already used valid targets can not be used again as valid input a second time. The program doesn't allow you to shoot the same position twice.
+
 ![End the game](image-5.png)
 You can end the game at anytime by typing 'stop' or 's' and the program will sum up your current progress with another comment depending on the outcome. After which the program will exit. Easy and simple.
+You can't call the game to stop before you started playing i.e., when you are in the section about choposing the board size.
 
-You might notice some delays in occuring printouts when you run the game. This is intentional to make it easier for the player to notice new prompts and have time to read them before a new prompt comes. All of the delays implemented in the code are limited to a few seconds. So this is not the program doing somethin unintentional in the background, it is just giving you time to read.
+You might notice some delays in occuring printouts when you run the game. This is intentional to make it easier for the player to notice new prompts and have time to read them before a new prompt comes. All of the delays implemented in the code are limited to a few seconds. So this is not the program doing something unintentional in the background, it is just giving you time to read.
 
-Data Model
+## Data Model
 The program requires numpy to run. 
 I decided to use global variables for SHIP_SIZEs, BATTLEFIELD_SIZE instead of one single board class to handle all the information.
 The ship deployment is recorded in BATTLEFIELD_PLAYER and BATTLEFIELD_PC, two numpy arrays.
-As I'm used to Matlab coding with matrices, numpy presented some of the closest analogies in coding to what I'm used to. This is very evident in the ship placement. My first instinct was to work in seperate variables rather than what I now a structures in Matlab or classes from python. I tend to use those mostly in more complex programs.
+As I'm used to Matlab coding with matrices, numpy presented some of the closest analogies in coding to what I'm used to from Matlab. This is very evident in the ship placement. My first instinct was to work in seperate variables rather than what I know as structures in Matlab or classes from python. I tend to use those mostly in more complex programs. I hope you don't mind.
 
+This are the steps performed while placing ships on the board:
 1. First a X,Y coordinate in the grid is randomly selected as seed point for a ship.
-2. Than the program selects at random if it is oriented along a column or row.
-3. The column or row is extracted as a vector and the ship is placed in a free gap preferably starting a the seed coordinate or adjacent. If there is no space avalable the ship is not placed and another try is initiated.
+2. Than the program selects at random, if the ship is going to be oriented along a column or row.
+3. The column or row is extracted as a vector and the ship is placed in a free gap preferably starting at the seed coordinate or adjacent. If there is no space available the ship is not placed and another try is initiated.
 4. If a ship could be deplayed the extracted vector is reintegrated into the deployment matrix BATTLEFIELD_PLAYER or BATTLEFIED_PC.
 5. Ship placememt is done using while loops to allow for multiple tries.
 
@@ -55,8 +63,8 @@ I had to switch writing the code on multiple platforms during the development du
 
 ## Vaildator Pylint on console
 
-Once everything was running on Gitpod I tested the code with pylint and improved it according to the outcome of the test while making sure it didn't cause unexpected issues to employ those changes.
-My pylint progress and the final test details are stated below:
+Once everything was running on Gitpod I tested the code with Pylint and improved it according to the outcome of the test while making sure it didn't cause unexpected issues to employ those changes.
+My Pylint progress and the final test details are stated below:
 
 -----------------------------------
 Your code has been rated at 6.71/10
@@ -98,23 +106,8 @@ I think the remaining issues are mostly esthetic and not necessary given the lef
 
 ![PEP8 result](image-6.png)
 PEP8 validator showed no errors online.
-## Creating the Heroku app
 
-When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
+## Credits
 
-1. `heroku/python`
-2. `heroku/nodejs`
-
-You must then create a _Config Var_ called `PORT`. Set this to `8000`
-
-If you have credentials, such as in the Love Sandwiches project, you must create another _Config Var_ called `CREDS` and paste the JSON into the value field.
-
-Connect your GitHub repository and deploy as normal.
-
-## Constraints
-
-The deployment terminal is set to 80 columns by 24 rows. That means that each line of text needs to be 80 characters or less otherwise it will be wrapped onto a second line.
-
----
-
-Happy coding!
+- Wikipedia for game details
+- Code Institute for tutorials and help with IDE account troubleshooting
