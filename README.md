@@ -106,7 +106,7 @@ I think the remaining issues are mostly esthetic and not necessary given the lef
 
 ## Validator PEP8
 
-![PEP8 result](image-6.png)
+![PEP8 result](https://github.com/Andre-42/Battleship-in-Python/assets/135899198/64e09418-2f0b-4678-a2e5-cd1ba5b6e7ec)
 PEP8 validator showed no errors online.
 
 ## Credits
