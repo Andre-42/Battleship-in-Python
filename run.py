@@ -509,6 +509,7 @@ def main():
                 game_on = not stop_it
         # Print the current map overview
         map_overview = generate_map_overview(hitlist_player, not_hit_player)
+        print("----------------------------------------------")
         print("This is how it looks, Capt'n:")
         for row in map_overview:
             print(' '.join(row))
