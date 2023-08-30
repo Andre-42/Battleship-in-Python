@@ -351,6 +351,7 @@ def check_command(command, not_hit_yet):
     valid_input = created_scoreboard[0]
     if command in valid_input:
         # check command regarding target coordinates
+        print("----------------------------------------------")
         if command in not_hit_yet:
             print(f"New target acquired: {command}")
             print("Fire!")
@@ -492,7 +493,9 @@ def main():
                     hitlist_pc.append(pc_command)
                 except ValueError:
                     pass
+                time.sleep(1)
                 # score the enemy
+                print("----------------------------------------------")
                 if hit_pc:
                     print(f"The enemy scored a hit at: {pc_command}")
                     print("Get your swimaids out!")
@@ -505,6 +508,7 @@ def main():
                 # Have you shot all your cannons?
                 game_on = (game_on and (len(not_hit_player) > 0 or
                            len(not_hit_pc) > 0))
+                time.sleep(1)
             else:
                 game_on = not stop_it
         # Print the current map overview
@@ -526,7 +530,7 @@ def main():
         print("Well, wet feet are better than sinking. Ey, Capt'n?")
     else:
         print("A jolly good win Sir. Let's see how the rum is fairing.")
-    time.sleep(5)
+    time.sleep(3)
     print("Oh god, I can't stand upright anymore. God night!")
     time.sleep(5)
 
